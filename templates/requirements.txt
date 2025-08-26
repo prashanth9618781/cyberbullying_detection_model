@@ -1,7 +1,0 @@
-Flask==3.0.2
-Keras==3.6.0
-nltk==3.9.1
-numpy==1.24.3  # Change to a compatible version
-pandas==2.2.3  # Ensure this version is compatible
-scikit-learn==1.2.2  # Change to a compatible version
-tensorflow==2.20.0  # Change to a compatible version
