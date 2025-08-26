@@ -1,6 +1,5 @@
 flask==3.0.2
 tensorflow==2.20.0
-keras==3.3.3
 nltk==3.9.1
 pandas==2.2.3
 scikit-learn==1.5.2
