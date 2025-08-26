@@ -11,7 +11,8 @@ model = tf.keras.models.load_model('cyberbullying_detection_model.h5')
 with open('tokenizer.pkl', 'rb') as file:
     tokenizer = pickle.load(file)
 
-# Define max_sequence_length (same as during training)
+# Define max_sequence_length (same as during train
+# ing)
 max_sequence_length = 500
 
 @app.route('/')
@@ -36,4 +37,6 @@ def predict():
     return render_template('index.html', text=input_text, result=result)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
