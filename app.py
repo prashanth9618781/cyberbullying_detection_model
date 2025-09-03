@@ -1,42 +1,45 @@
-from flask import Flask, request, jsonify, render_template
-import tensorflow as tf
-import pickle
+from flask import Flask, request, render_template
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+import pickle
+import tensorflow as tf
+import os
 
-# Initialize Flask app
-app = Flask(__name__)
+# ----------------------------
+# Load model and tokenizer once at startup
+MODEL_PATH = "cyberbullying_detection_model.h5"
+TOKENIZER_PATH = "tokenizer.pkl"
+MAX_SEQUENCE_LENGTH = 500
 
-# Load the trained model and tokenizer
-model = tf.keras.models.load_model('cyberbullying_detection_model.h5')
-with open('tokenizer.pkl', 'rb') as file:
+# Load the trained model
+model = tf.keras.models.load_model(MODEL_PATH)
+
+# Load tokenizer
+with open(TOKENIZER_PATH, "rb") as file:
     tokenizer = pickle.load(file)
 
-# Define max_sequence_length (same as during train
-# ing)
-max_sequence_length = 500
+# ----------------------------
+# Flask app
+app = Flask(__name__)
 
-@app.route('/')
+@app.route("/")
 def home():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/predict', methods=['POST'])
+@app.route("/predict", methods=["POST"])
 def predict():
-    # Get input text from the user
-    input_text = request.form['comment']
+    input_text = request.form["comment"]
 
-    # Preprocess the text
+    # Convert text to sequence
     input_sequence = tokenizer.texts_to_sequences([input_text])
-    input_padded = pad_sequences(input_sequence, maxlen=max_sequence_length)
+    input_padded = pad_sequences(input_sequence, maxlen=MAX_SEQUENCE_LENGTH)
 
-    # Make a prediction
+    # Predict
     prediction = model.predict(input_padded)[0][0]
-
-    # Determine the label
     result = "Cyberbullying" if prediction > 0.5 else "Non-Cyberbullying"
 
-    return render_template('index.html', text=input_text, result=result)
+    return render_template("index.html", text=input_text, result=result)
 
-if __name__ == '__main__':
-    import os
+# ----------------------------
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host="0.0.0.0", port=port)
